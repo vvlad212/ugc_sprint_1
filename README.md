@@ -1,7 +1,17 @@
-# Проектная работа 8 спринта
+## Installation
+docker-compose up --build
 
-Проектные работы в этом модуле выполняются в командах по 3 человека. Процесс обучения аналогичен сервису, где вы изучали асинхронное программирование. Роли в команде и отправка работы на ревью не меняются.
+## Init db
+flask db upgrade
 
-Распределение по командам подготовит команда сопровождения. Куратор поделится с вами списками в Slack в канале #group_projects.
+## Flask auth api OpenAPI Specification
+localhost:8000/auth_api/doc/
 
-Задания на спринт вы найдёте внутри тем.
+## FastApi online cinema api OpenAPI Specification
+localhost:8000/movies_api/openapi
+
+## Create admin user
+flask createsuperuser <email> <password>
+
+## Sources
+https://github.com/mybestnickname/Auth_sprint_2
