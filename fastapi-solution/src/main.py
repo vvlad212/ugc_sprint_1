@@ -13,8 +13,8 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import ORJSONResponse
 
 app = FastAPI(
-    docs_url='/movie_api/openapi',
-    openapi_url='/movie_api/openapi.json',
+    docs_url='/movies_api/openapi',
+    openapi_url='/movies_api/openapi.json',
     default_response_class=ORJSONResponse,
 )
 
