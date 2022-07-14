@@ -52,9 +52,9 @@ async def shutdown():
 
 # Подключаем роутер к серверу, указав префикс /v1/films
 # Теги указываем для удобства навигации по документации
-app.include_router(films.router, prefix='/movie_api/v1/films')
-app.include_router(person.router, prefix='/movie_api/v1/person', tags=['person'])
-app.include_router(genre.router, prefix='/movie_api/v1/genre', tags=['genre'])
+app.include_router(films.router, prefix='/movies_api/v1/films')
+app.include_router(person.router, prefix='/movies_api/v1/person', tags=['person'])
+app.include_router(genre.router, prefix='/movies_api/v1/genre', tags=['genre'])
 
 if __name__ == '__main__':
     uvicorn.run(

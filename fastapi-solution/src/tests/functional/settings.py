@@ -16,4 +16,4 @@ ELASTIC_PORT_SOURCE = int(os.getenv('ES_PORT', 9200))
 SERVICE_URL = os.getenv('SERVICE_URL', 'http://127.0.0.1:8000')
 
 # Версия API
-API = os.getenv('API', '/movie_api/v1')
+API = os.getenv('API', '/movies_api/v1')
