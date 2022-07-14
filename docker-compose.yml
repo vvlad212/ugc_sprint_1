@@ -10,6 +10,8 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+    ports:
+      - 5432:5432
 
   auth-db-test:
     image: postgres:13-alpine
@@ -23,9 +25,11 @@ services:
     restart: always
     volumes:
       - auth-redis_data:/data
+    ports:
+      - 6379:5379
 
   nginx:
-    build: nginx
+    build: ./nginx
     ports:
       - 8000:80
     depends_on:
@@ -39,7 +43,7 @@ services:
       - "16686:16686"
 
   flask-auth:
-    build: authapp
+    build: ./authapp
     expose:
       - 8000
     depends_on:
@@ -85,7 +89,7 @@ services:
       - discovery.type=single-node
 
   web_test:
-    build: fastapi-solution
+    build: ./fastapi-solution
     depends_on:
       - elasticsearch_test
       - redis-cache_test
@@ -107,8 +111,8 @@ services:
 
   api_tests:
     build:
-      context: fastapi-solution/src
-      dockerfile: fastapi-solution/src/tests/Dockerfile
+      context: ./fastapi-solution/src
+      dockerfile: tests/Dockerfile
     entrypoint: >
       sh -c "python3 /functional/utils/wait_for_es.py
       && python3 /functional/utils/wait_for_redis.py
@@ -123,7 +127,7 @@ services:
     command: ["pytest", "-vv" ,"functional"]
 
   web:
-    build: fastapi-solution
+    build: ./fastapi-solution
     depends_on:
       - elasticsearch
       - redis-cache
