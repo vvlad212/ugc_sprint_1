@@ -1,8 +1,7 @@
 from functools import wraps
-import requests
 from core import config
 import logging
-from services import auth
+from services.auth import get_auth_service
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +12,7 @@ def check_roles():
         async def decorator(*args, **kwargs):
             logger.info(f"Trying to get a response from the auth service.")
             try:
-                auth_service = kwargs['auth_service']
+                auth_service = get_auth_service()
                 result = await auth_service.validate(kwargs['token'])
                 user_roles = result.get('user_roles')
                 if not user_roles:

@@ -10,8 +10,6 @@ from fastapi import APIRouter, Depends, Path, Query, Header
 from api.views_decorators import check_roles
 from pkg.pagination.pagination import Paginator
 from pydantic import Required
-
-from services.auth import AuthService, get_auth_service
 from services.films import FilmService, get_film_service
 from services.person import PersonService, get_person_service
 
@@ -196,8 +194,7 @@ async def film_by_person_id(
         person_service: PersonService = Depends(
             get_person_service),
         film_service: FilmService = Depends(
-            get_film_service),
-        auth_service: AuthService = Depends(get_auth_service)
+            get_film_service)
 
 ) -> FilmListResponseModel:
     """Получение фильма по персоне, через ID персоны.

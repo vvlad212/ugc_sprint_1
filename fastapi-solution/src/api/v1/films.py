@@ -6,9 +6,7 @@ from api.errors.httperrors import FilmHTTPNotFoundError
 from api.models.resp_models import FilmRespModel, FilmsResponseModel
 from fastapi import APIRouter, Depends, Path, Query, Header
 from pydantic import Required
-
 from api.views_decorators import check_roles
-from services.auth import AuthService, get_auth_service
 from services.films import FilmService, get_film_service
 
 router = APIRouter()
@@ -97,8 +95,7 @@ async def get_films_list(
             description="Pagination size number.",
         ),
         user_roles=Depends(),
-        film_service: FilmService = Depends(get_film_service),
-        auth_service: AuthService = Depends(get_auth_service)
+        film_service: FilmService = Depends(get_film_service)
 ) -> FilmsResponseModel:
     """
     Get filtered films list with pagination.
