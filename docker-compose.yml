@@ -4,6 +4,8 @@ services:
   #Auth service
   auth-db:
     image: postgres:13-alpine
+    networks:
+      - services_api
     volumes:
       - flask_auth_db_data:/var/lib/postgresql/data/
     environment:
@@ -13,36 +15,36 @@ services:
     ports:
       - 5432:5432
 
-  auth-db-test:
-    image: postgres:13-alpine
-    environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${TEST_DB_NAME}
+  # auth-db-test:
+  #   networks:
+  #     - services_api
+  #   image: postgres:13-alpine
+  #   environment:
+  #     POSTGRES_USER: ${DB_USER}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #     POSTGRES_DB: ${TEST_DB_NAME}
 
   auth-redis:
+    networks:
+      - services_api
     image: redis:6.2-alpine
     restart: always
     volumes:
       - auth-redis_data:/data
-#    ports:
-#      - 6379:6379
-
-  nginx:
-    build: ./nginx
-    ports:
-      - 8000:80
-    depends_on:
-      - flask-auth
-      - web
+  #    ports:
+  #      - 6379:6379
 
   jaeger-trace:
+    networks:
+      - services_api
     image: jaegertracing/all-in-one:latest
     ports:
       - "6831:6831/udp"
       - "16686:16686"
 
   flask-auth:
+    networks:
+      - services_api
     build: ./authapp
     expose:
       - 8000
@@ -57,9 +59,11 @@ services:
       JAEGER_HOST: jaeger-trace
       PYTHONPATH: $PYTHONPATH:/authapp
 
-# Async Api
+  # Async Api
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
+    networks:
+      - services_api
     volumes:
       - new_admin_panel_sprint_3_elasticsearch-data:/usr/share/elasticsearch/data
     logging:
@@ -70,64 +74,76 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - discovery.type=single-node
 
-  redis-cache_test:
-    image: redis:6.2-alpine
-    container_name: test_redis
-    restart: unless-stopped
+  # redis-cache_test:
+  #   image: redis:6.2-alpine
+  #   networks:
+  #     - services_api
+  #   container_name: test_redis
+  #   restart: unless-stopped
 
-  elasticsearch_test:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
-    container_name: test_es
-    logging:
-      driver: none
-    expose:
-      - 9200
-    environment:
-      - xpack.monitoring.enabled=true
-      - xpack.watcher.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - discovery.type=single-node
+  # elasticsearch_test:
+  #   networks:
+  #     - services_api
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
+  #   container_name: test_es
+  #   logging:
+  #     driver: none
+  #   expose:
+  #     - 9200
+  #   environment:
+  #     - xpack.monitoring.enabled=true
+  #     - xpack.watcher.enabled=false
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #     - discovery.type=single-node
 
-  web_test:
-    build: ./fastapi-solution
-    depends_on:
-      - elasticsearch_test
-      - redis-cache_test
-    logging:
-      driver: none
-    env_file:
-      - .env
-    environment:
-      ES_HOST: elasticsearch_test
-      REDIS_HOST: redis-cache_test
-      ENV: test
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+  # web_test:
+  #   networks:
+  #     - services_api
+  #   build: ./fastapi-solution
+  #   depends_on:
+  #     - elasticsearch_test
+  #     - redis-cache_test
+  #   logging:
+  #     driver: none
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     ES_HOST: elasticsearch_test
+  #     REDIS_HOST: redis-cache_test
+  #     ENV: test
+  #   command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
   redis-cache:
     image: redis:6.2-alpine
+    networks:
+      - services_api
     restart: always
     volumes:
       - cache:/data
 
-  api_tests:
-    build:
-      context: ./fastapi-solution/src
-      dockerfile: tests/Dockerfile
-    entrypoint: >
-      sh -c "python3 /functional/utils/wait_for_es.py
-      && python3 /functional/utils/wait_for_redis.py
-      && pytest /functional/src/ -s --setup-show -p no:warnings"
-    depends_on:
-      - elasticsearch
-      - elasticsearch_test
-      - redis-cache_test
-      - web_test
-    env_file:
-      - .env
-    command: ["pytest", "-vv" ,"functional"]
+  # api_tests:
+  #   networks:
+  #       - services_api
+  #   build:
+  #     context: ./fastapi-solution/src
+  #     dockerfile: tests/Dockerfile
+  #   entrypoint: >
+  #     sh -c "python3 /functional/utils/wait_for_es.py
+  #     && python3 /functional/utils/wait_for_redis.py
+  #     && pytest /functional/src/ -s --setup-show -p no:warnings"
+  #   depends_on:
+  #     - elasticsearch
+  #     - elasticsearch_test
+  #     - redis-cache_test
+  #     - web_test
+  #   env_file:
+  #     - .env
+  #   command: ["pytest", "-vv" ,"functional"]
 
   web:
     build: ./fastapi-solution
+    networks:
+      - services_api
     depends_on:
       - elasticsearch
       - redis-cache
@@ -137,9 +153,55 @@ services:
       ENV: prod
       ES_HOST: elasticsearch
       REDIS_HOST: redis-cache
+    command:
+      [
+        "uvicorn",
+        "app.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000"
+      ]
 
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+  # UGCService
+  ugc-redis-limiter:
+    image: redis:6.2-alpine
+    networks:
+      - services_api
+    restart: always
 
+  ugcservice:
+    build: ./ugcservice
+    networks:
+      - kafka_docker
+      - services_api
+    expose:
+      - 8000
+    depends_on:
+      - ugc-redis-limiter
+    env_file:
+      - .env
+    restart: on-failure
+    command:
+      [
+        "uvicorn",
+        "app.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000"
+      ]
+
+  nginx:
+    build: ./nginx
+    networks:
+      - services_api
+    ports:
+      - 8000:80
+    depends_on:
+      - flask-auth
+      - web
+      - ugcservice
 
 volumes:
   new_admin_panel_sprint_3_elasticsearch-data:
@@ -147,3 +209,11 @@ volumes:
   flask_auth_db_data:
   auth-redis_data:
   cache:
+
+
+networks:
+  kafka_docker:
+    external: true
+  services_api:
+    name: services_api
+    driver: bridge
