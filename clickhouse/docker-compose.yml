@@ -44,3 +44,22 @@ services:
       - ./data/node4:/etc/clickhouse-server
     depends_on:
       - zookeeper
+
+  clickhouse-node5:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node5
+    hostname: clickhouse-node5
+    volumes:
+      - ./data/node5:/etc/clickhouse-server
+    depends_on:
+      - zookeeper
+
+
+  clickhouse-node6:
+    image: yandex/clickhouse-server:20.4
+    container_name: clickhouse-node6
+    hostname: clickhouse-node6
+    volumes:
+      - ./data/node6:/etc/clickhouse-server
+    depends_on:
+      - zookeeper
