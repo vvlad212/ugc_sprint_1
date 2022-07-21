@@ -33,7 +33,7 @@ class MovieWatchMarkService:
         
         if user_id:
             topic = AUTH_VIEWS_TOPIC
-            key = f'{film_id}+{user_id}'
+            key = f'{film_id}+_+{user_id}'
         else:
             topic = UNAUTH_VIEWS_TOPIC
             key = str(film_id)

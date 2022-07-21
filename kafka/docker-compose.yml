@@ -3,8 +3,8 @@ version: '2'
 services:
   kafka-zookeeper:
     image: confluentinc/cp-zookeeper:6.0.1
-    networks: 
-      - kafka_network
+    #networks: 
+   #   - kafka_network
     hostname: kafka-zookeeper
     container_name: kafka-zookeeper
     ports:
@@ -12,12 +12,12 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-#    user: root
+    user: root
 
   broker:
     image: confluentinc/cp-server:6.0.1
-    networks: 
-      - kafka_network
+    #networks: 
+   #   - kafka_network
     hostname: broker
     container_name: broker
     depends_on:
@@ -25,7 +25,7 @@ services:
     ports:
       - "9092:9092"
       - "9101:9101"
-#    user: root
+    user: root
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'kafka-zookeeper:2181'
@@ -49,8 +49,8 @@ services:
 
   init-kafka:
       image: confluentinc/cp-kafka:6.0.1
-      networks: 
-      - kafka_network
+      #networks: 
+   #   - kafka_network
       depends_on:
         - broker
       container_name: init-kafka
@@ -67,11 +67,11 @@ services:
 
   schema-registry:
     image: confluentinc/cp-schema-registry:6.0.1
-    networks: 
-      - kafka_network
+    #networks: 
+   #   - kafka_network
     hostname: schema-registry
     container_name: schema-registry
-#    user: root
+    user: root
     depends_on:
       - broker
     ports:
@@ -83,11 +83,11 @@ services:
 
   connect:
     image: cnfldemos/cp-server-connect-datagen:0.4.0-6.0.1
-    networks: 
-      - kafka_network
+    #networks: 
+   #   - kafka_network
     hostname: connect
     container_name: connect
-#    user: root
+    user: root
     depends_on:
       - broker
       - schema-registry
@@ -117,11 +117,11 @@ services:
 
   control-center:
     image: confluentinc/cp-enterprise-control-center:6.0.1
-    networks: 
-      - kafka_network
+    #networks: 
+   #   - kafka_network
     hostname: control-center
     container_name: control-center
-#    user: root
+    user: root
     depends_on:
       - broker
       - schema-registry
@@ -143,11 +143,11 @@ services:
 
   ksqldb-server:
     image: confluentinc/cp-ksqldb-server:6.0.1
-    networks: 
-      - kafka_network
+    #networks: 
+   #   - kafka_network
     hostname: ksqldb-server
     container_name: ksqldb-server
-#    user: root
+    user: root
     depends_on:
       - broker
       - connect
@@ -169,10 +169,10 @@ services:
 
   ksqldb-cli:
     image: confluentinc/cp-ksqldb-cli:6.0.1
-    networks: 
-      - kafka_network
+    #networks: 
+   #   - kafka_network
     container_name: ksqldb-cli
-#    user: root
+    user: root
     depends_on:
       - broker
       - connect
@@ -182,10 +182,10 @@ services:
 
   ksql-datagen:
     image: confluentinc/ksqldb-examples:6.0.1
-    networks: 
-      - kafka_network
+    #networks: 
+   #   - kafka_network
     hostname: ksql-datagen
-#    user: root
+    user: root
     container_name: ksql-datagen
     depends_on:
       - ksqldb-server
@@ -207,9 +207,9 @@ services:
 
   rest-proxy:
     image: confluentinc/cp-kafka-rest:6.0.1
-    networks: 
-      - kafka_network
-#    user: root
+    #networks: 
+   #   - kafka_network
+    user: root
     depends_on:
       - broker
       - schema-registry
@@ -223,7 +223,7 @@ services:
       KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
       KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
 
-networks:
-  kafka_network:
-    name: kafka_docker
-    driver: bridge
+#networks:
+#  kafka_network:
+#    name: kafka_docker
+#    driver: bridge
