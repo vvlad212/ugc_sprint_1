@@ -26,8 +26,9 @@ class MsgConsumer:
                     # self.consumer.close()  # Останавливаем клиента Kafka
                     # self.pool.close()
                     return
-                if len(self.insert_list) == 100:
+                if len(self.insert_list) == 1:
                     self.consumer.paused()
+
                     self.clickhouse_operate.ch_insert(insert_values=self.insert_list)
                     self.insert_list.clear()
                     self.consumer.resume()
