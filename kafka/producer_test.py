@@ -5,7 +5,7 @@ producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
 
 n = 0
 while n < 105:
-    value = f'01:23:55.00{n}'
+    value = f'01:23:55.00000{n}'
     key = f'025c58cd-1b7e-43be-9ffb-8571a613579b_025c58cd-1b7e-43be-9ffb-8571a613579b'
 
     producer.send(
