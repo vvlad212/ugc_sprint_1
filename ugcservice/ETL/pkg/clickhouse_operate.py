@@ -3,7 +3,7 @@ import backoff
 
 from clickhouse_driver import Client
 from clickhouse_driver.errors import NetworkError, CannotParseUuidError, Error
-from clickhouse.ETL.pkg.backoff_handlers.req_handler import create_backoff_hdlr
+from ugcservice.ETL.pkg.req_handler import create_backoff_hdlr
 
 logger = logging.getLogger(__name__)
 

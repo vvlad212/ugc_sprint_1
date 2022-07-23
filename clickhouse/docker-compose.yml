@@ -5,6 +5,7 @@ services:
     image: zookeeper:3.5
     container_name: zookeeper
     hostname: zookeeper
+    restart: on-failure
 
   clickhouse-node1:
     image: yandex/clickhouse-server:20.4
@@ -17,6 +18,8 @@ services:
       - ./data/node1:/etc/clickhouse-server
     depends_on:
       - zookeeper
+    restart: on-failure
+
 
   clickhouse-node2:
     image: yandex/clickhouse-server:20.4
@@ -26,6 +29,7 @@ services:
       - ./data/node2:/etc/clickhouse-server
     depends_on:
       - zookeeper
+    restart: on-failure
 
   clickhouse-node3:
     image: yandex/clickhouse-server:20.4
@@ -35,6 +39,7 @@ services:
       - ./data/node3:/etc/clickhouse-server
     depends_on:
       - zookeeper
+    restart: on-failure
 
   clickhouse-node4:
     image: yandex/clickhouse-server:20.4
@@ -44,6 +49,7 @@ services:
       - ./data/node4:/etc/clickhouse-server
     depends_on:
       - zookeeper
+    restart: on-failure
 
   clickhouse-node5:
     image: yandex/clickhouse-server:20.4
@@ -53,7 +59,7 @@ services:
       - ./data/node5:/etc/clickhouse-server
     depends_on:
       - zookeeper
-
+    restart: on-failure
 
   clickhouse-node6:
     image: yandex/clickhouse-server:20.4
@@ -63,3 +69,4 @@ services:
       - ./data/node6:/etc/clickhouse-server
     depends_on:
       - zookeeper
+    restart: on-failure
