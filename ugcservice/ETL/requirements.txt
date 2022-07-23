@@ -1,0 +1,4 @@
+kafka-python==2.0.2
+backoff==2.0.1
+python-dotenv==0.20.0
+clickhouse-driver==0.2.4

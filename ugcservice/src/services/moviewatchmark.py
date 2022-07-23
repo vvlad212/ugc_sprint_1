@@ -33,10 +33,10 @@ class MovieWatchMarkService:
         
         if user_id:
             topic = AUTH_VIEWS_TOPIC
-            key = f'{film_id}+{user_id}'
+            key = f'{film_id}_{user_id}'
         else:
             topic = UNAUTH_VIEWS_TOPIC
-            key = str(film_id)
+            key = str(film_id)+'_00000000-0000-0000-0000-000000000000'
 
         if await self.storage.send_to_ugc_storage(
             topic=topic,
