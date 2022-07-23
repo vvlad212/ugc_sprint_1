@@ -1,12 +1,13 @@
 import logging
-from logging import config as logging_config
-from core.logger import LOGGING
-from ugcservice.ETL.pkg.clickhouse_operate import ClickHouse
-from ugcservice.ETL.pkg.kafka_consumer import KafkaConsumerClient
-from ugcservice.ETL.pkg.req_handler import create_backoff_hdlr
+# from logging import config as logging_config
+from pkg.clickhouse_operate import ClickHouse
+from pkg.kafka_consumer import KafkaConsumerClient
+# from pkg.logger import LOGGING
+from pkg.req_handler import create_backoff_hdlr
 
-logging_config.dictConfig(LOGGING)
-logger = logging.getLogger(__name__)
+logging.getLogger().addHandler(logging.StreamHandler())
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
 BACKOFF_MAX_TIME = 60  # sec
 batch_size = 10

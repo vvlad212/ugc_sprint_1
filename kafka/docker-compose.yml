@@ -3,8 +3,8 @@ version: '2'
 services:
   kafka-zookeeper:
     image: confluentinc/cp-zookeeper:6.0.1
-    #networks: 
-   #   - kafka_network
+    networks:
+      - kafka_network
     hostname: kafka-zookeeper
     container_name: kafka-zookeeper
     ports:
@@ -18,8 +18,8 @@ services:
 
   broker:
     image: confluentinc/cp-server:6.0.1
-    #networks: 
-   #   - kafka_network
+    networks:
+      - kafka_network
     hostname: broker
     container_name: broker
     depends_on:
@@ -51,8 +51,8 @@ services:
 
   init-kafka:
       image: confluentinc/cp-kafka:6.0.1
-      #networks: 
-   #   - kafka_network
+      networks:
+      - kafka_network
       depends_on:
         - broker
       container_name: init-kafka
@@ -69,8 +69,8 @@ services:
 
   schema-registry:
     image: confluentinc/cp-schema-registry:6.0.1
-    #networks: 
-   #   - kafka_network
+    networks:
+      - kafka_network
     hostname: schema-registry
     container_name: schema-registry
     user: root
@@ -87,8 +87,8 @@ services:
 
   connect:
     image: cnfldemos/cp-server-connect-datagen:0.4.0-6.0.1
-    #networks: 
-   #   - kafka_network
+    networks:
+      - kafka_network
     hostname: connect
     container_name: connect
     user: root
@@ -123,8 +123,8 @@ services:
 
   control-center:
     image: confluentinc/cp-enterprise-control-center:6.0.1
-    #networks: 
-   #   - kafka_network
+    networks:
+      - kafka_network
     hostname: control-center
     container_name: control-center
     user: root
@@ -151,8 +151,8 @@ services:
 
   ksqldb-server:
     image: confluentinc/cp-ksqldb-server:6.0.1
-    #networks: 
-   #   - kafka_network
+    networks:
+      - kafka_network
     hostname: ksqldb-server
     container_name: ksqldb-server
     user: root
@@ -179,8 +179,8 @@ services:
 
   ksqldb-cli:
     image: confluentinc/cp-ksqldb-cli:6.0.1
-    #networks: 
-   #   - kafka_network
+    networks:
+      - kafka_network
     container_name: ksqldb-cli
     user: root
     depends_on:
@@ -194,8 +194,8 @@ services:
 
   ksql-datagen:
     image: confluentinc/ksqldb-examples:6.0.1
-    #networks: 
-   #   - kafka_network
+    networks:
+      - kafka_network
     hostname: ksql-datagen
     user: root
     container_name: ksql-datagen
@@ -220,8 +220,8 @@ services:
 
   rest-proxy:
     image: confluentinc/cp-kafka-rest:6.0.1
-    #networks: 
-   #   - kafka_network
+    networks:
+      - kafka_network
     user: root
     depends_on:
       - broker
@@ -236,7 +236,7 @@ services:
       KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
       KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
     restart: on-failure
-#networks:
-#  kafka_network:
-#    name: kafka_docker
-#    driver: bridge
+networks:
+  kafka_network:
+    name: kafka_docker
+    driver: bridge
