@@ -5,9 +5,7 @@ from pkg.clickhouse_operate import ClickHouse
 from pkg.kafka_consumer import KafkaConsumerClient
 from core.req_handler import create_backoff_hdlr
 
-
 logger = logging.getLogger(__name__)
-
 back_off_hdlr = create_backoff_hdlr(logger)
 
 
