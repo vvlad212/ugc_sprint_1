@@ -1,39 +1,37 @@
 import logging
-import os
-
 import backoff
 from kafka import KafkaConsumer
 from kafka.errors import NoBrokersAvailable, KafkaError
-from pkg.req_handler import create_backoff_hdlr
+from core.req_handler import create_backoff_hdlr
+from core import config
 
 logger = logging.getLogger(__name__)
-
-BACKOFF_MAX_TIME = 60  # sec
 back_off_hdlr = create_backoff_hdlr(logger)
-
 
 class KafkaConsumerClient:
     def __init__(self):
-        self.topics = ['auth_views_labels']#, 'unauth_views_labels']
-        self.auto_offset_reset = 'earliest'
-        self.enable_auto_commit = False
-        self.bootstrap_servers = [f"{os.getenv('KAFKA_HOST', 'host.docker.internal')}:29092"]
-        self.group_id = 'upload_to_clickhouse'
-        self.consumer_timeout_ms = 5000
-        self.retry_backoff_ms = 3000
-        self.reconnect_backoff_ms = 5000
-        self.reconnect_backoff_max_ms = 10000
-        self.heartbeat_interval_ms = 5000
-        self.api_version_auto_timeout_ms = 5000
+        self.topics = config.KAFKA_TOPICS
+        self.auto_offset_reset = config.KAFKA_AUTO_OFFSET_RESET
+        self.enable_auto_commit = config.KAFKA_ENABLE_AUTO_COMMIT
+        self.bootstrap_servers = [f'{config.KAFKA_HOST}:{config.KAFKA_PORT}']
+        self.group_id = config.KAFKA_GROUP_ID
+        self.consumer_timeout_ms = config.KAFKA_CONSUMER_TIMEOUT_MS
+        self.retry_backoff_ms = config.KAFKA_RETRY_BACKOFF_MS
+        self.reconnect_backoff_ms = config.KAFKA_RECONNECT_BACKOFF_MS
+        self.reconnect_backoff_max_ms = config.KAFKA_RECONNECT_BACKOFF_MAX_MS
+        self.heartbeat_interval_ms = config.KAFKA_HEARTBEAT_INTERVAL_MS
+        self.api_version_auto_timeout_ms = config.KAFKA_API_VERSION_AUTO_TIMEOUT_MS
 
     @backoff.on_exception(
         backoff.fibo,
         exception=(KafkaError, NoBrokersAvailable),
-        max_time=BACKOFF_MAX_TIME,
+        max_time=60,
+        max_tries = 100,
         on_backoff=back_off_hdlr,
     )
     def create_consumer(self):
         try:
+            logger.info('Trying to connect to kafka')
             consumer = KafkaConsumer(
                 *self.topics,
                 auto_offset_reset=self.auto_offset_reset,
@@ -47,7 +45,8 @@ class KafkaConsumerClient:
                 heartbeat_interval_ms=self.heartbeat_interval_ms,
                 api_version_auto_timeout_ms=self.api_version_auto_timeout_ms
             )
+            logger.info('Successful connection to kafka')
             return consumer
         except Exception as ex:
-            logger.error(f'Failed connection to brokers {ex}')
+            logger.error(f'Error connecting to kafka')
             raise NoBrokersAvailable

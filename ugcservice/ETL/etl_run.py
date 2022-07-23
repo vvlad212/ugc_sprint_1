@@ -1,16 +1,13 @@
 import logging
-# from logging import config as logging_config
+
+from core import config
 from pkg.clickhouse_operate import ClickHouse
 from pkg.kafka_consumer import KafkaConsumerClient
-# from pkg.logger import LOGGING
-from pkg.req_handler import create_backoff_hdlr
+from core.req_handler import create_backoff_hdlr
 
-logging.getLogger().addHandler(logging.StreamHandler())
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
 
-BACKOFF_MAX_TIME = 60  # sec
-batch_size = 10
+logger = logging.getLogger(__name__)
+
 back_off_hdlr = create_backoff_hdlr(logger)
 
 
@@ -35,7 +32,7 @@ class ETLProcessRunner:
                     consumer.close()
                     consumer = kafka_consumer.create_consumer()
                     continue
-                if len(insert_list) == batch_size:
+                if len(insert_list) == config.KAFKA_BATCH_SIZE:
                     consumer.paused()
                     clickhouse_operate.ch_insert(insert_values=insert_list)
                     insert_list.clear()
