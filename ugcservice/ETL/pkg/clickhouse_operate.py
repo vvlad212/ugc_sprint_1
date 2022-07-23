@@ -23,7 +23,6 @@ class ClickHouse:
         on_backoff=back_off_hdlr,
     )
     def connection(self):
-
         client = Client(host=self.clickhouse_host)
         try:
             logger.info('Trying to connect clickhouse.')

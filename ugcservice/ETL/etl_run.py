@@ -5,14 +5,11 @@ from pkg.clickhouse_operate import ClickHouse
 from pkg.kafka_consumer import KafkaConsumerClient
 from core.req_handler import create_backoff_hdlr
 
-
 logger = logging.getLogger(__name__)
-
 back_off_hdlr = create_backoff_hdlr(logger)
 
 
 class ETLProcessRunner:
-
     @classmethod
     def start_etl(cls):
         logger.info('ETL process has been started.')
