@@ -13,7 +13,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    user: root
+#    user: root
 
   broker:
     image: confluentinc/cp-server:6.0.1
@@ -26,7 +26,7 @@ services:
     ports:
       - "9092:9092"
       - "9101:9101"
-    user: root
+#    user: root
     restart: on-failure
     environment:
       KAFKA_BROKER_ID: 1
@@ -74,7 +74,7 @@ services:
     hostname: schema-registry
     restart: on-failure
     container_name: schema-registry
-    user: root
+#    user: root
     depends_on:
       - broker
     ports:
@@ -91,7 +91,7 @@ services:
     hostname: connect
     restart: on-failure
     container_name: connect
-    user: root
+#    user: root
     depends_on:
       - broker
       - schema-registry
@@ -125,7 +125,7 @@ services:
       - kafka_network
     hostname: control-center
     container_name: control-center
-    user: root
+#    user: root
     restart: on-failure
     depends_on:
       - broker
@@ -153,7 +153,7 @@ services:
     hostname: ksqldb-server
     restart: on-failure
     container_name: ksqldb-server
-    user: root
+#    user: root
     depends_on:
       - broker
       - connect
@@ -178,7 +178,7 @@ services:
     networks:
       - kafka_network
     container_name: ksqldb-cli
-    user: root
+#    user: root
     depends_on:
       - broker
       - connect
@@ -192,7 +192,7 @@ services:
       - kafka_network
     hostname: ksql-datagen
     restart: on-failure
-    user: root
+#    user: root
     container_name: ksql-datagen
     depends_on:
       - ksqldb-server
@@ -216,7 +216,7 @@ services:
     image: confluentinc/cp-kafka-rest:6.0.1
     networks:
       - kafka_network
-    user: root
+#    user: root
     restart: on-failure
     depends_on:
       - broker
