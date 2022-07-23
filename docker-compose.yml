@@ -203,6 +203,21 @@ services:
       - web
       - ugcservice
 
+  ugc-etl:
+    build: ./ugcservice/etl
+    networks:
+      - kafka_docker
+      - services_api
+      - clickhouse_docker
+    depends_on:
+      - nginx
+    env_file:
+      - .env
+    command:
+      ["python3", "etl_run.py"]
+#    restart: on-failure
+
+
 volumes:
   new_admin_panel_sprint_3_elasticsearch-data:
     external: true
@@ -213,6 +228,8 @@ volumes:
 
 networks:
   kafka_docker:
+    external: true
+  clickhouse_docker:
     external: true
   services_api:
     name: services_api

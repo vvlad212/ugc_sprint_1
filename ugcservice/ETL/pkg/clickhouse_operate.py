@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 BACKOFF_MAX_TIME = 60  # sec
 back_off_hdlr = create_backoff_hdlr(logger)
-CLICKHOUSE_HOST = '127.0.0.1'
+CLICKHOUSE_HOST = 'clickhouse-node1'
 CLICKHOUSE_DATABASE = 'default'
 CLICKHOUSE_TABLE = 'views'
 query_auth_insert = f"INSERT INTO {CLICKHOUSE_DATABASE}.{CLICKHOUSE_TABLE} (film_id, user_id, timestamp) VALUES"
@@ -18,7 +18,7 @@ query_auth_insert = f"INSERT INTO {CLICKHOUSE_DATABASE}.{CLICKHOUSE_TABLE} (film
 class ClickHouse:
     @backoff.on_exception(
         backoff.fibo,
-        exception=(ConnectionRefusedError, NetworkError, Error, ConnectionError, BaseException),
+        exception=(ConnectionRefusedError, Error),
         max_time=BACKOFF_MAX_TIME,
         on_backoff=back_off_hdlr,
     )
@@ -42,6 +42,7 @@ class ClickHouse:
     def ch_insert(self, insert_values: list):
         try:
             client = self.connection()
+            logger.info(f'Start insert in CLICKHOUSE.')
             client.execute(query_auth_insert, (tuple(row) for row in insert_values))
             logger.info(f'{len(insert_values)} row(s) added in CLICKHOUSE.')
         except Exception as ex:
