@@ -3,7 +3,7 @@ version: '2'
 services:
   kafka-zookeeper:
     image: confluentinc/cp-zookeeper:6.0.1
-    networks:
+    networks: 
       - kafka_network
     hostname: kafka-zookeeper
     container_name: kafka-zookeeper
@@ -12,13 +12,11 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    user: root
-    restart: on-failure
-
+#    user: root
 
   broker:
     image: confluentinc/cp-server:6.0.1
-    networks:
+    networks: 
       - kafka_network
     hostname: broker
     container_name: broker
@@ -27,7 +25,7 @@ services:
     ports:
       - "9092:9092"
       - "9101:9101"
-    user: root
+#    user: root
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'kafka-zookeeper:2181'
@@ -47,11 +45,11 @@ services:
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
-    restart: on-failure
+
 
   init-kafka:
       image: confluentinc/cp-kafka:6.0.1
-      networks:
+      networks: 
       - kafka_network
       depends_on:
         - broker
@@ -69,11 +67,11 @@ services:
 
   schema-registry:
     image: confluentinc/cp-schema-registry:6.0.1
-    networks:
+    networks: 
       - kafka_network
     hostname: schema-registry
     container_name: schema-registry
-    user: root
+#    user: root
     depends_on:
       - broker
     ports:
@@ -82,16 +80,14 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker:29092'
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
-    restart: on-failure
-
 
   connect:
     image: cnfldemos/cp-server-connect-datagen:0.4.0-6.0.1
-    networks:
+    networks: 
       - kafka_network
     hostname: connect
     container_name: connect
-    user: root
+#    user: root
     depends_on:
       - broker
       - schema-registry
@@ -118,16 +114,14 @@ services:
       CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
       CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
       CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
-    restart: on-failure
-
 
   control-center:
     image: confluentinc/cp-enterprise-control-center:6.0.1
-    networks:
+    networks: 
       - kafka_network
     hostname: control-center
     container_name: control-center
-    user: root
+#    user: root
     depends_on:
       - broker
       - schema-registry
@@ -146,16 +140,14 @@ services:
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
-    restart: on-failure
-
 
   ksqldb-server:
     image: confluentinc/cp-ksqldb-server:6.0.1
-    networks:
+    networks: 
       - kafka_network
     hostname: ksqldb-server
     container_name: ksqldb-server
-    user: root
+#    user: root
     depends_on:
       - broker
       - connect
@@ -174,30 +166,26 @@ services:
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR: 1
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: 'true'
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: 'true'
-    restart: on-failure
-
 
   ksqldb-cli:
     image: confluentinc/cp-ksqldb-cli:6.0.1
-    networks:
+    networks: 
       - kafka_network
     container_name: ksqldb-cli
-    user: root
+#    user: root
     depends_on:
       - broker
       - connect
       - ksqldb-server
     entrypoint: /bin/sh
     tty: true
-    restart: on-failure
-
 
   ksql-datagen:
     image: confluentinc/ksqldb-examples:6.0.1
-    networks:
+    networks: 
       - kafka_network
     hostname: ksql-datagen
-    user: root
+#    user: root
     container_name: ksql-datagen
     depends_on:
       - ksqldb-server
@@ -216,13 +204,12 @@ services:
       STREAMS_BOOTSTRAP_SERVERS: broker:29092
       STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
       STREAMS_SCHEMA_REGISTRY_PORT: 8081
-    restart: on-failure
 
   rest-proxy:
     image: confluentinc/cp-kafka-rest:6.0.1
-    networks:
+    networks: 
       - kafka_network
-    user: root
+#    user: root
     depends_on:
       - broker
       - schema-registry
@@ -235,7 +222,7 @@ services:
       KAFKA_REST_BOOTSTRAP_SERVERS: 'broker:29092'
       KAFKA_REST_LISTENERS: "http://0.0.0.0:8082"
       KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
-    restart: on-failure
+
 networks:
   kafka_network:
     name: kafka_docker
