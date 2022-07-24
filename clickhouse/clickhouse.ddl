@@ -1,5 +1,5 @@
 --node1
-CREATE DATABASE IF NOT EXISTS replica;
+"CREATE DATABASE IF NOT EXISTS replica";
 CREATE DATABASE IF NOT EXISTS shard;
 
 CREATE TABLE shard.views (event_time DEFAULT toDateTime(now()), film_id UUID,user_id UUID, timestamp String) Engine=ReplicatedMergeTree('/clickhouse/tables/shard1/views', 'replica_1') PARTITION BY toYYYYMMDD(event_time) order by event_time;
