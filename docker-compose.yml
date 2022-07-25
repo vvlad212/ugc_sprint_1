@@ -13,6 +13,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
 
+
   auth-redis:
     networks:
       - services_api
@@ -133,7 +134,7 @@ services:
       - ugcservice
 
   ugc-etl:
-    build: ./ugcservice/etl
+    build: ./etl
     networks:
       - kafka_docker
       - services_api

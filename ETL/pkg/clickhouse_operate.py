@@ -12,6 +12,8 @@ back_off_hdlr = create_backoff_hdlr(logger)
 class ClickHouse:
     def __init__(self):
         self.clickhouse_host = config.CLICKHOUSE_HOST
+        self.clickhouse_user = config.CLICKHOUSE_USER
+        self.clickhouse_password = config.CLICKHOUSE_PASSWORD
         self.clickhouse_database = config.CLICKHOUSE_DATABASE
         self.clickhouse_table = config.CLICKHOUSE_TABLE
 
@@ -23,7 +25,9 @@ class ClickHouse:
         on_backoff=back_off_hdlr,
     )
     def connection(self):
-        client = Client(host=self.clickhouse_host)
+        client = Client(host=self.clickhouse_host,
+                        user=self.clickhouse_user,
+                        password=self.clickhouse_password)
         try:
             logger.info('Trying to connect clickhouse.')
             client.connection.connect()

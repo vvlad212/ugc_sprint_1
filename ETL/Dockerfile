@@ -15,4 +15,3 @@ WORKDIR /code/etl
 COPY . /code/etl
 
 ENV PYTHONPATH "${PYTHONPATH}:/code/etl"
-#RUN python3 etl_run.py
