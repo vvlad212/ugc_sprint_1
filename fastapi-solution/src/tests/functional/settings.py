@@ -6,7 +6,7 @@ REDIS_PORT = int(os.getenv('REDIS_PORT_TEST', 6379))
 
 # Настройки Elasticsearch (test)
 ELASTIC_HOST = os.getenv('ES_HOST_TEST', '127.0.0.1')
-ELASTIC_PORT = int(os.getenv('ES_PORT_TEST', 9201))
+ELASTIC_PORT = int(os.getenv('ES_PORT_TEST', 9200))
 
 # Настройки Elasticsearch (prod)
 ELASTIC_HOST_SOURCE = os.getenv('ES_HOST', '127.0.0.1')
