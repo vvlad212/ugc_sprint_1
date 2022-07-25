@@ -12,7 +12,6 @@ COPY requirements.txt /code/requirements.txt
 RUN python3 -m pip install --no-cache-dir --upgrade -r requirements.txt
 
 WORKDIR /code/etl
-COPY . /code/etl
+COPY /ETL /code/etl
 
 ENV PYTHONPATH "${PYTHONPATH}:/code/etl"
-#RUN python3 etl_run.py
