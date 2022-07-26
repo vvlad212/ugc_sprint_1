@@ -1,0 +1,110 @@
+version: "3.9"
+
+services:
+  auth-db-test:
+     networks:
+       - services_api
+     image: postgres:13-alpine
+     environment:
+       POSTGRES_USER: ${DB_USER}
+       POSTGRES_PASSWORD: ${DB_PASSWORD}
+       POSTGRES_DB: ${TEST_DB_NAME}
+
+  auth-redis-test:
+    networks:
+      - services_api
+    image: redis:6.2-alpine
+    restart: always
+    volumes:
+      - auth-redis_data:/data
+
+  flask-auth-test:
+    networks:
+      - services_api
+    build: ./authapp
+    expose:
+      - 8000
+    depends_on:
+      - auth-db-test
+      - auth-redis-test
+    env_file:
+      - .env
+    environment:
+      JAEGER_PORT: 6831
+      ENV: test
+      REDIS_HOST: auth-redis-test
+      JAEGER_HOST: jaeger-trace
+      PYTHONPATH: $PYTHONPATH:/authapp
+    command: ["pytest", "tests/functional/src/", "-s", "--setup-show"]
+
+# Async Api
+  redis-cache_test:
+    networks:
+      - services_api
+    image: redis:6.2-alpine
+    container_name: test_redis
+    restart: unless-stopped
+
+  elasticsearch_test:
+    networks:
+      - services_api
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
+    container_name: test_es
+    logging:
+      driver: none
+    expose:
+      - 9200
+    environment:
+      - xpack.monitoring.enabled=true
+      - xpack.watcher.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+
+  web_test:
+    networks:
+      - services_api
+    build: ./fastapi-solution
+    depends_on:
+      - elasticsearch_test
+      - redis-cache_test
+    logging:
+      driver: none
+    env_file:
+      - .env
+    environment:
+      ES_HOST: elasticsearch_test
+      REDIS_HOST: redis-cache_test
+      ENV: test
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
+  api_tests:
+    networks:
+      - services_api
+    build:
+      context: ./fastapi-solution/src
+      dockerfile: tests/Dockerfile
+    entrypoint: >
+      sh -c "python3 /functional/utils/wait_for_es.py
+      && python3 /functional/utils/wait_for_redis.py
+      && pytest /functional/src/ -s --setup-show -p no:warnings"
+    depends_on:
+      - elasticsearch_test
+      - redis-cache_test
+      - web_test
+    env_file:
+      - .env
+    command: ["pytest", "-vv" ,"functional"]
+
+
+volumes:
+  new_admin_panel_sprint_3_elasticsearch-data:
+    external: true
+  flask_auth_db_data:
+  auth-redis_data:
+  cache:
+
+networks:
+  services_api:
+    name: services_api
+    driver: bridge

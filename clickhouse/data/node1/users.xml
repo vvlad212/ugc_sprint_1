@@ -10,16 +10,16 @@
     </profiles>
 
     <users>
-        <default>
-            <password></password>
+        <app>
+            <password>qwe123</password>
             <profile>default</profile>
             <networks>
                 <ip>::/0</ip>
             </networks>
             <quota>default</quota>
-        </default>
+        </app>
         <admin>
-            <password>123</password>
+            <password>qwe123</password>
             <profile>default</profile>
             <networks>
                 <ip>::/0</ip>

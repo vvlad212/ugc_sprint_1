@@ -53,6 +53,7 @@ services:
       image: confluentinc/cp-kafka:6.0.1
       networks:
       - kafka_network
+#      user: root
       depends_on:
         - broker
       container_name: init-kafka

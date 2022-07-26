@@ -1,3 +1,5 @@
+--clickhouse-client -u app --password qwe123
+
 --node1
 CREATE DATABASE IF NOT EXISTS replica;
 CREATE DATABASE IF NOT EXISTS shard;
