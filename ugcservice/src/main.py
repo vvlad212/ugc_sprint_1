@@ -48,11 +48,11 @@ async def startup():
     )
     await FastAPILimiter.init(redis)
 
-    # logger.info(f"Connecting to Kafka {Config().KAFKA_HOST}:{Config().KAFKA_PORT}")
-    # kafka.kafka = AIOKafkaProducer(
-    #     bootstrap_servers=f'{Config().KAFKA_HOST}:{Config().KAFKA_PORT}'
-    # )
-    # await kafka.kafka.start()
+    logger.info(f"Connecting to Kafka {Config().KAFKA_HOST}:{Config().KAFKA_PORT}")
+    kafka.kafka = AIOKafkaProducer(
+        bootstrap_servers=f'{Config().KAFKA_HOST}:{Config().KAFKA_PORT}'
+    )
+    await kafka.kafka.start()
 
 
 @app.on_event("shutdown")

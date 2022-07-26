@@ -56,12 +56,11 @@ async def save_movie_watchmark(
     """
     Send movie view label(timestamp) to UGC store.
     """
-    # if await movies_watchmark_service.save_watchmark(
-    #     film_id=body_req.film_id,
-    #     user_id=body_req.user_id,
-    #     timestamp=body_req.timestamp
-    # ):
-    if True:
+    if await movies_watchmark_service.save_watchmark(
+        film_id=body_req.film_id,
+        user_id=body_req.user_id,
+        timestamp=body_req.timestamp
+    ):
         return None
     else:
         raise StorageInternalError
