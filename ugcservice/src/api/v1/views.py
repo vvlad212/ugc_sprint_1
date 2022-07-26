@@ -1,10 +1,10 @@
 import datetime
 import logging
-from http import HTTPStatus
+from urllib import response
 from uuid import UUID
 
 from api.errors.httperrors import StorageInternalError
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response, status
 from fastapi_limiter.depends import RateLimiter
 from pydantic import BaseModel, Field
 
@@ -26,9 +26,9 @@ class PostMovieWatchMarkReqBody(BaseModel):
 
 @router.post(
     '/viewlabel',
-    status_code=200,
+    status_code=status.HTTP_201_CREATED,
     responses={
-        500: {
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
             "description": "Internal server error",
             "content": {
                 "application/json": {
@@ -36,7 +36,7 @@ class PostMovieWatchMarkReqBody(BaseModel):
                 }
             },
         },
-        429: {
+        status.HTTP_429_TOO_MANY_REQUESTS: {
             "content": {
                 "application/json": {
                     "example": {"detail": "Too Many Requests"}
@@ -52,7 +52,7 @@ async def save_movie_watchmark(
     movies_watchmark_service: MovieWatchMarkService = Depends(
         get_watchmark_service
     )
-) -> 200:
+) -> None:
     """
     Send movie view label(timestamp) to UGC store.
     """
@@ -61,6 +61,6 @@ async def save_movie_watchmark(
         user_id=body_req.user_id,
         timestamp=body_req.timestamp
     ):
-        return HTTPStatus.OK
+        return None
     else:
         raise StorageInternalError

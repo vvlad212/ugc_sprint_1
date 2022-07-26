@@ -9,7 +9,7 @@ from fastapi.responses import ORJSONResponse
 from fastapi_limiter import FastAPILimiter
 
 from api.v1 import views
-from core import config
+from core.config import Config
 from db import kafka
 
 logger = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ app.openapi = custom_openapi
 
 @app.on_event("startup")
 async def startup():
-    redis_uri = f"redis://{config.REDIS_LIMITER_HOST}:{config.REDIS_LIMITER_PORT}/1"
+    redis_uri = f"redis://{Config().REDIS_LIMITER_HOST}:{Config().REDIS_LIMITER_PORT}/1"
     logger.info(f"Connecting to Redis {redis_uri}")
     redis = await aioredis.from_url(
         redis_uri,
@@ -48,9 +48,9 @@ async def startup():
     )
     await FastAPILimiter.init(redis)
 
-    logger.info(f"Connecting to Kafka {config.KAFKA_HOST}:{config.KAFKA_PORT}")
+    logger.info(f"Connecting to Kafka {Config().KAFKA_HOST}:{Config().KAFKA_PORT}")
     kafka.kafka = AIOKafkaProducer(
-        bootstrap_servers=f'{config.KAFKA_HOST}:{config.KAFKA_PORT}'
+        bootstrap_servers=f'{Config().KAFKA_HOST}:{Config().KAFKA_PORT}'
     )
     await kafka.kafka.start()
 
